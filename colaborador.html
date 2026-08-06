@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nómina Web · Radicación Colaborador</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;padding:0;background:#F5F6F8;font-family:Arial,Helvetica,sans-serif;color:#1c1f2b;-webkit-text-size-adjust:100%}*{box-sizing:border-box}a{color:#239bd8;text-decoration:underline}a:hover{color:#011480}input,select,textarea,button{font-family:Arial,Helvetica,sans-serif}::-webkit-scrollbar{height:6px;width:6px}::-webkit-scrollbar-thumb{background:#c0c0c2;border-radius:99px}@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}</style></helmet>
+<div style="min-height:100vh;background:#F5F6F8;display:flex;flex-direction:column">
+
+<header style="position:sticky;top:0;z-index:30;background:#011480;color:#fff;box-shadow:0 2px 8px rgba(1,20,128,.2)">
+<div style="max-width:760px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px">
+<svg width="38" height="38" viewBox="0 0 100 100" style="flex:0 0 auto" aria-label="Integral de Empaques S.A.S"><circle cx="50" cy="50" r="49" fill="#fff"></circle><g transform="translate(50 50)"><rect x="-19" y="-19" width="18" height="18" transform="rotate(45 -10 -10)" fill="#011480"></rect><rect x="1" y="-19" width="18" height="18" transform="rotate(45 10 -10)" fill="#239bd8"></rect><rect x="-19" y="1" width="18" height="18" transform="rotate(45 -10 10)" fill="#c0c0c2"></rect><rect x="1" y="1" width="18" height="18" transform="rotate(45 10 10)" fill="#029f4c"></rect></g><circle cx="50" cy="50" r="47" fill="none" stroke="#011480" stroke-width="3"></circle></svg>
+<div style="flex:1 1 auto;min-width:0">
+<div style="font-size:16px;font-weight:bold;line-height:1.15">Nómina Web</div>
+<div style="font-size:10.5px;color:#9fb2ff;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">INTEGRAL DE EMPAQUES S.A.S</div>
+</div>
+<button type="button" onClick="{{ toggleMenu }}" style="flex:0 0 auto;display:flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(255,255,255,.4);border-radius:99px;padding:5px 10px 5px 5px;cursor:pointer;min-height:44px">
+<span style="width:32px;height:32px;border-radius:50%;background:#239bd8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:bold">CM</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg>
+</button>
+</div>
+<sc-if value="{{ menuAbierto }}">
+<div style="max-width:760px;margin:0 auto;padding:0 14px 14px">
+<div style="background:#fff;border-radius:12px;padding:14px;color:#1c1f2b">
+<div style="font-size:15px;font-weight:bold">Carlos Andrés Muñoz</div>
+<div style="font-size:12.5px;color:#5b6072;margin-top:3px;line-height:1.4">C.C. 1.114.xxx.xxx · Operario de producción</div>
+<button type="button" style="margin-top:12px;width:100%;min-height:44px;background:#F5F6F8;border:1.5px solid #c0c0c2;border-radius:10px;font-size:14px;color:#011480;font-weight:bold;cursor:pointer">Cerrar sesión</button>
+</div>
+</div>
+</sc-if>
+<nav style="max-width:760px;margin:0 auto;padding:0 8px;display:flex">
+<button type="button" onClick="{{ irRadicar }}" style="position:relative;flex:1 1 0;background:transparent;border:0;color:#fff;font-size:13.5px;padding:11px 6px;min-height:46px;cursor:pointer">Radicar novedad<sc-if value="{{ tabRadicar }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:14%;right:14%;bottom:0;height:3px;background:#239bd8;border-radius:3px 3px 0 0"></span></sc-if></button>
+<button type="button" onClick="{{ irSolicitudes }}" style="position:relative;flex:1 1 0;background:transparent;border:0;color:#fff;font-size:13.5px;padding:11px 6px;min-height:46px;cursor:pointer">Mis solicitudes<sc-if value="{{ tabSolicitudes }}"><span style="position:absolute;left:14%;right:14%;bottom:0;height:3px;background:#239bd8;border-radius:3px 3px 0 0"></span></sc-if></button>
+</nav>
+</header>
+
+<main style="flex:1 1 auto;width:100%;max-width:760px;margin:0 auto;padding:16px 14px 120px">
+
+<sc-if value="{{ vistaWizard }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">
+<sc-for list="{{ pasos }}" as="p" hint-placeholder-count="4">
+<div style="flex:0 0 auto;display:flex;align-items:center;gap:8px;background:{{ p.chipBg }};border:1.5px solid {{ p.chipBd }};border-radius:99px;padding:7px 13px 7px 7px">
+<span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:bold;background:{{ p.numBg }};color:{{ p.numFg }}">{{ p.marca }}</span>
+<span style="font-size:12.5px;font-weight:bold;color:{{ p.txt }};white-space:nowrap">{{ p.label }}</span>
+</div>
+</sc-for>
+</div>
+
+<section style="background:#fff;border:1px solid #e3e5ea;border-radius:14px;box-shadow:0 1px 3px rgba(16,24,40,.06);padding:18px 16px">
+
+<sc-if value="{{ enPaso1 }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">¿Qué necesitas radicar?</h1>
+<p style="margin:0 0 16px;font-size:14px;color:#5b6072;line-height:1.5">Toca una opción para continuar. Te pediremos solo lo necesario.</p>
+<div style="display:grid;gap:12px">
+<button type="button" onClick="{{ elegirIncapacidad }}" style="position:relative;text-align:left;display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid #e3e5ea;border-radius:14px;padding:16px;min-height:88px;cursor:pointer" style-hover="border-color:#239bd8">
+<span style="flex:0 0 auto;width:48px;height:48px;border-radius:12px;background:#e8f4fc;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#011480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="4"></rect><path d="M12 9v6M9 12h6"></path></svg></span>
+<span style="min-width:0">
+<span style="display:block;font-size:16px;font-weight:bold;line-height:1.3">Incapacidad</span>
+<span style="display:block;font-size:13px;color:#5b6072;line-height:1.45;margin-top:4px;text-wrap:pretty">Enfermedad general, accidente de tránsito o accidente de trabajo.</span>
+</span>
+<sc-if value="{{ selIncapacidad }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;border-radius:14px;box-shadow:0 0 0 3px rgba(1,20,128,.1);pointer-events:none"></span></sc-if>
+</button>
+<button type="button" onClick="{{ elegirLicencia }}" style="position:relative;text-align:left;display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid #e3e5ea;border-radius:14px;padding:16px;min-height:88px;cursor:pointer" style-hover="border-color:#239bd8">
+<span style="flex:0 0 auto;width:48px;height:48px;border-radius:12px;background:#e8f4fc;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#011480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.2"></circle><path d="M3 20c0-3.4 2.7-5.6 6-5.6s6 2.2 6 5.6"></path><circle cx="17.5" cy="12.5" r="2.2"></circle><path d="M14.4 20c0-2 1.4-3.4 3.1-3.4s3.1 1.4 3.1 3.4"></path></svg></span>
+<span style="min-width:0">
+<span style="display:block;font-size:16px;font-weight:bold;line-height:1.3">Licencia de maternidad / paternidad</span>
+<span style="display:block;font-size:13px;color:#5b6072;line-height:1.45;margin-top:4px;text-wrap:pretty">Licencia por nacimiento de tu hijo o hija.</span>
+</span>
+<sc-if value="{{ selLicencia }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;border-radius:14px;box-shadow:0 0 0 3px rgba(1,20,128,.1);pointer-events:none"></span></sc-if>
+</button>
+<button type="button" onClick="{{ elegirCesantias }}" style="position:relative;text-align:left;display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid #e3e5ea;border-radius:14px;padding:16px;min-height:88px;cursor:pointer" style-hover="border-color:#239bd8">
+<span style="flex:0 0 auto;width:48px;height:48px;border-radius:12px;background:#e8f4fc;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#011480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8.5h18.4v10.2a2 2 0 0 1-2 2H4.8a2 2 0 0 1-2-2V8.5z"></path><path d="M7 8.5V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2.5M16 14.2h2.4"></path></svg></span>
+<span style="min-width:0">
+<span style="display:block;font-size:16px;font-weight:bold;line-height:1.3">Retiro de cesantías</span>
+<span style="display:block;font-size:13px;color:#5b6072;line-height:1.45;margin-top:4px;text-wrap:pretty">Retiro parcial para vivienda, estudios o remodelación, o retiro completo.</span>
+</span>
+<sc-if value="{{ selCesantias }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;border-radius:14px;box-shadow:0 0 0 3px rgba(1,20,128,.1);pointer-events:none"></span></sc-if>
+</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ enPaso2Inc }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Detalle de la incapacidad</h1>
+<p style="margin:0 0 18px;font-size:14px;color:#5b6072;line-height:1.5">Copia las fechas tal como aparecen en el certificado médico.</p>
+
+<div style="margin-bottom:20px">
+<span style="display:block;font-size:14px;font-weight:bold;margin-bottom:8px">Tipo de incapacidad</span>
+<div style="display:grid;gap:8px">
+<sc-for list="{{ subtipos }}" as="o" hint-placeholder-count="3">
+<button type="button" onClick="{{ o.onClick }}" style="position:relative;text-align:left;background:#fff;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px;font-size:14.5px;min-height:50px;cursor:pointer">{{ o.label }}<sc-if value="{{ o.sel }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;background:rgba(1,20,128,.05);border-radius:10px;pointer-events:none"></span></sc-if></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:grid;gap:14px;margin-bottom:16px">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de inicio</span><input type="date" value="{{ fechaInicio }}" onChange="{{ setFechaInicio }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de fin</span><input type="date" value="{{ fechaFin }}" onChange="{{ setFechaFin }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F5F6F8;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px"><span style="font-size:14px;font-weight:bold">N.º de días</span><span style="font-size:16px;font-weight:bold;color:#011480">{{ diasTexto }}</span></div>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">EPS</span><select value="{{ eps }}" onChange="{{ setEps }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Coosalud</option><option>Nueva EPS</option><option>SURA</option><option>Salud Total</option></select></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Observaciones <span style="font-weight:normal;color:#9096a6">(opcional)</span></span><textarea rows="3" value="{{ observaciones }}" onChange="{{ setObservaciones }}" placeholder="Ej.: incapacidad expedida en urgencias." style="width:100%;border:1.5px solid #c0c0c2;border-radius:10px;padding:12px 13px;font-size:16px;resize:vertical"></textarea></label>
+</div>
+
+<sc-if value="{{ esART }}">
+<div style="display:flex;gap:10px;background:#fff7e6;border:1px solid #f0b429;border-radius:12px;padding:13px 14px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a5a00" stroke-width="2" stroke-linecap="round" style="flex:0 0 auto"><path d="M12 3 2 20h20L12 3zM12 9v6M12 17.4v.6"></path></svg>
+<div style="font-size:13.5px;line-height:1.5;color:#5b4200">Este caso se reporta también a Seguridad y Salud en el Trabajo (ARL).</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ enPaso2Ces }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Detalle del retiro de cesantías</h1>
+<p style="margin:0 0 18px;font-size:14px;color:#5b6072;line-height:1.5">Indica el tipo de retiro y el fondo donde están tus cesantías.</p>
+
+<div style="margin-bottom:20px">
+<span style="display:block;font-size:14px;font-weight:bold;margin-bottom:8px">Tipo de retiro</span>
+<div style="display:grid;gap:8px">
+<sc-for list="{{ cesTipos }}" as="o" hint-placeholder-count="2">
+<button type="button" onClick="{{ o.onClick }}" style="position:relative;text-align:left;background:#fff;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px;font-size:14.5px;min-height:50px;cursor:pointer">{{ o.label }}<sc-if value="{{ o.sel }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;background:rgba(1,20,128,.05);border-radius:10px;pointer-events:none"></span></sc-if></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:grid;gap:14px">
+<sc-if value="{{ esParcial }}">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Motivo del retiro</span><select value="{{ motivo }}" onChange="{{ setMotivo }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Estudios</option><option>Compra de vivienda</option><option>Remodelación</option><option>Otro</option></select></label>
+</sc-if>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Monto solicitado (COP)</span>
+<div style="display:flex;align-items:stretch;border:1.5px solid #c0c0c2;border-radius:10px;background:#fff;min-height:52px;overflow:hidden"><span style="display:flex;align-items:center;padding:0 13px;background:#F5F6F8;border-right:1px solid #e3e5ea;font-size:16px;color:#5b6072">$</span><input type="text" inputMode="numeric" value="{{ monto }}" onChange="{{ setMonto }}" style="flex:1 1 auto;border:0;outline:none;padding:0 13px;font-size:16px;min-width:0"></div>
+</label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fondo de cesantías</span><select value="{{ fondo }}" onChange="{{ setFondo }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Porvenir</option><option>Protección</option><option>Colfondos</option></select></label>
+</div>
+
+<div style="display:flex;gap:10px;background:#e8f4fc;border:1px solid #239bd8;border-radius:12px;padding:13px 14px;margin-top:16px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#011480" stroke-width="2" stroke-linecap="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 11v6M12 7.4v.6"></path></svg>
+<div style="font-size:13.5px;line-height:1.5;color:#0b2a5b">Los documentos que debes adjuntar dependen del motivo. En el siguiente paso verás la lista exacta.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ enPaso3 }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Documentos requeridos</h1>
+<p style="margin:0 0 4px;font-size:14px;color:#5b6072;line-height:1.5">Según lo que elegiste: <b style="color:#1c1f2b">{{ resumenSeleccion }}</b></p>
+<p style="margin:0 0 14px;font-size:12.5px;color:#9096a6">PDF, JPG o PNG · máx. 10 MB por archivo.</p>
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+<div style="flex:1 1 auto;height:8px;background:#eceef2;border-radius:99px;overflow:hidden"><div style="height:100%;background:#029f4c;width:{{ progresoPct }}%"></div></div>
+<span style="flex:0 0 auto;font-size:12.5px;color:#5b6072">{{ progresoTexto }}</span>
+</div>
+
+<div style="display:grid;gap:10px">
+<sc-for list="{{ documentos }}" as="d" hint-placeholder-count="3">
+<div onDragOver="{{ d.onDragOver }}" onDrop="{{ d.onDrop }}" style="border:1.5px dashed {{ d.borde }};background:{{ d.fondo }};border-radius:12px;padding:14px">
+<div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+<span style="font-size:15px;font-weight:bold;line-height:1.35;flex:1 1 auto;min-width:0">{{ d.nombre }}</span>
+<span style="flex:0 0 auto;font-size:10.5px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:{{ d.etqFg }};background:{{ d.etqBg }};border:1px solid {{ d.etqBd }};border-radius:99px;padding:3px 9px">{{ d.etiqueta }}</span>
+</div>
+<sc-if value="{{ d.cargado }}">
+<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#02733a;margin-bottom:10px;min-width:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#029f4c" stroke-width="2.5" stroke-linecap="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9.5" fill="#eaf7ef"></circle><path d="m7.8 12.3 2.7 2.7 5.7-5.7"></path></svg>
+<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.archivo }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ d.pendiente }}">
+<div style="font-size:12.5px;color:#9096a6;margin-bottom:10px">Pendiente · toma una foto, elige un archivo o arrástralo aquí</div>
+</sc-if>
+<div style="display:flex;gap:8px">
+<label style="flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:8px;background:#011480;color:#fff;border-radius:10px;font-size:14.5px;font-weight:bold;min-height:48px;cursor:pointer">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M4 19h16"></path></svg>
+{{ d.botonTexto }}
+<input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange="{{ d.onFile }}" style="display:none">
+</label>
+<sc-if value="{{ d.cargado }}">
+<button type="button" onClick="{{ d.onQuitar }}" style="flex:0 0 auto;background:#fff;border:1.5px solid #c0c0c2;border-radius:10px;color:#5b6072;font-size:14px;padding:0 16px;min-height:48px;cursor:pointer">Quitar</button>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+
+<sc-if value="{{ esART }}">
+<div style="display:flex;gap:10px;background:#fff7e6;border:1px solid #f0b429;border-radius:12px;padding:13px 14px;margin-top:14px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a5a00" stroke-width="2" stroke-linecap="round" style="flex:0 0 auto"><path d="M12 3 2 20h20L12 3zM12 9v6M12 17.4v.6"></path></svg>
+<div style="font-size:13.5px;line-height:1.5;color:#5b4200">Este caso se reporta también a Seguridad y Salud en el Trabajo (ARL).</div>
+</div>
+</sc-if>
+
+<div style="margin-top:16px;border:2px solid #239bd8;background:#f4fafe;border-radius:14px;padding:15px">
+<label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer">
+<input type="checkbox" checked="{{ autorizado }}" onChange="{{ toggleAutorizacion }}" style="width:26px;height:26px;flex:0 0 auto;margin:1px 0 0;accent-color:#029f4c">
+<span style="font-size:13.5px;line-height:1.55;color:#0b2a5b;text-wrap:pretty">Autorizo el tratamiento de mis datos personales y datos sensibles, incluida mi historia clínica, conforme a la <b>Ley 1581 de 2012</b> y la Política de Tratamiento de Datos de Integral de Empaques S.A.S. <a href="#politica">Ver política</a></span>
+</label>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ enPaso4 }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Revisa y radica</h1>
+<p style="margin:0 0 16px;font-size:14px;color:#5b6072;line-height:1.5">Verifica la información antes de enviarla a Nómina.</p>
+
+<div style="border:1px solid #e3e5ea;border-radius:12px;overflow:hidden;margin-bottom:14px">
+<div style="background:#F5F6F8;padding:10px 14px;font-size:12px;font-weight:bold;letter-spacing:.5px;text-transform:uppercase;color:#5b6072">Datos de la solicitud</div>
+<sc-for list="{{ resumen }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;justify-content:space-between;gap:14px;padding:12px 14px;border-top:1px solid #eceef2">
+<span style="font-size:13.5px;color:#5b6072;flex:0 0 auto">{{ r.k }}</span>
+<span style="font-size:14px;font-weight:bold;text-align:right;min-width:0">{{ r.v }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="border:1px solid #e3e5ea;border-radius:12px;overflow:hidden">
+<div style="background:#F5F6F8;padding:10px 14px;font-size:12px;font-weight:bold;letter-spacing:.5px;text-transform:uppercase;color:#5b6072">Documentos adjuntos</div>
+<sc-for list="{{ adjuntos }}" as="a" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid #eceef2">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#029f4c" stroke-width="2.5" stroke-linecap="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9.5" fill="#eaf7ef"></circle><path d="m7.8 12.3 2.7 2.7 5.7-5.7"></path></svg>
+<span style="min-width:0"><span style="display:block;font-size:14px;font-weight:bold;line-height:1.3">{{ a.nombre }}</span><span style="display:block;font-size:12.5px;color:#5b6072;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ a.archivo }}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{ vistaConfirmacion }}">
+<div style="background:#fff;border:1px solid #e3e5ea;border-radius:14px;box-shadow:0 1px 3px rgba(16,24,40,.06);padding:26px 18px;text-align:center">
+<div style="width:84px;height:84px;margin:0 auto 18px;border-radius:50%;background:#eaf7ef;display:flex;align-items:center;justify-content:center;animation:pop .35s ease-out">
+<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#029f4c" stroke-width="2.6" stroke-linecap="round"><path d="m5 12.8 4.4 4.4L19 7.6"></path></svg>
+</div>
+<h1 style="margin:0 0 8px;font-size:21px;color:#011480">Solicitud recibida</h1>
+<p style="margin:0 auto 20px;font-size:14.5px;color:#5b6072;line-height:1.55;max-width:420px;text-wrap:pretty">Tu solicitud fue radicada correctamente. Puedes hacer seguimiento en "Mis solicitudes".</p>
+<div style="border:1.5px solid #239bd8;background:#f4fafe;border-radius:12px;padding:16px;margin-bottom:18px">
+<div style="font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:#5b6072;margin-bottom:6px">Folio de radicación</div>
+<div style="font-size:26px;font-weight:bold;color:#011480;letter-spacing:.5px">{{ folio }}</div>
+<div style="font-size:13px;color:#5b6072;margin-top:8px">{{ fechaRadicacion }}</div>
+<div style="margin-top:12px"><span style="display:inline-block;background:#239bd8;color:#fff;border-radius:99px;font-size:12.5px;font-weight:bold;padding:6px 14px">Recibida</span></div>
+</div>
+<div style="display:grid;gap:10px">
+<button type="button" onClick="{{ irSolicitudes }}" style="width:100%;min-height:52px;background:#011480;color:#fff;border:0;border-radius:12px;font-size:15.5px;font-weight:bold;cursor:pointer">Ver mis solicitudes</button>
+<button type="button" onClick="{{ radicarOtra }}" style="width:100%;min-height:52px;background:#fff;color:#011480;border:1.5px solid #011480;border-radius:12px;font-size:15.5px;font-weight:bold;cursor:pointer">Radicar otra novedad</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabSolicitudes }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480">Mis solicitudes</h1>
+<p style="margin:0 0 16px;font-size:14px;color:#5b6072;line-height:1.5">Consulta el estado de cada radicación por su folio.</p>
+<div style="display:grid;gap:12px">
+<sc-for list="{{ solicitudes }}" as="s" hint-placeholder-count="3">
+<div style="background:#fff;border:1px solid #e3e5ea;border-radius:14px;box-shadow:0 1px 3px rgba(16,24,40,.05);padding:15px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
+<span style="font-size:16px;font-weight:bold;color:#011480;letter-spacing:.3px">{{ s.folio }}</span>
+<span style="flex:0 0 auto;background:{{ s.chipBg }};color:{{ s.chipFg }};border:1px solid {{ s.chipBd }};border-radius:99px;font-size:12px;font-weight:bold;padding:5px 12px;white-space:nowrap">{{ s.estado }}</span>
+</div>
+<div style="font-size:14px;line-height:1.45">{{ s.tipo }}</div>
+<div style="font-size:12.5px;color:#5b6072;margin-top:3px">Radicada el {{ s.fecha }}</div>
+<sc-if value="{{ s.devuelta }}">
+<div style="display:flex;gap:9px;margin-top:10px;background:#fdecea;border:1px solid #f5c2bd;border-radius:10px;padding:11px 12px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b42318" stroke-width="2.2" stroke-linecap="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 7.5v5M12 16v.6"></path></svg>
+<div style="font-size:13px;line-height:1.5;color:#7a1c14"><b>Motivo de devolución:</b> {{ s.motivoDevolucion }}</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+</main>
+
+<sc-if value="{{ vistaWizard }}">
+<div style="position:sticky;bottom:0;z-index:25;background:rgba(255,255,255,.97);border-top:1px solid #e3e5ea;box-shadow:0 -3px 12px rgba(16,24,40,.07);padding:12px 14px">
+<div style="max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center">
+<sc-if value="{{ puedeVolver }}">
+<button type="button" onClick="{{ atras }}" style="flex:0 0 auto;min-height:54px;padding:0 18px;background:#fff;border:1.5px solid #c0c0c2;border-radius:12px;font-size:15px;color:#011480;font-weight:bold;cursor:pointer">Atrás</button>
+</sc-if>
+<button type="button" disabled="{{ continuarBloqueado }}" onClick="{{ continuar }}" style="flex:1 1 auto;min-height:54px;background:{{ ctaBg }};color:#fff;border:0;border-radius:12px;font-size:16px;font-weight:bold;cursor:{{ ctaCursor }}">{{ ctaTexto }}</button>
+</div>
+<sc-if value="{{ mostrarAyudaCTA }}">
+<p style="max-width:760px;margin:8px auto 0;font-size:12.5px;color:#9096a6;text-align:center">{{ ayudaCTA }}</p>
+</sc-if>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:420,&quot;height&quot;:900}}">
+const CHIP = {
+  Recibida: ['#e8f4fc', '#0b3f66', '#239bd8'],
+  Validada: ['#F5F6F8', '#5b6072', '#c0c0c2'],
+  Devuelta: ['#fdecea', '#7a1c14', '#f5c2bd'],
+  Radicada: ['#eaf7ef', '#02733a', '#029f4c']
+};
+
+class Component extends DCLogic {
+  state = {
+    tab: 'radicar', menu: false, paso: 1, vista: 'wizard',
+    tipo: null, subtipo: 'General',
+    fechaInicio: '2026-03-09', fechaFin: '2026-03-13',
+    eps: 'Coosalud', observaciones: '',
+    cesTipo: 'Parcial', motivo: 'Compra de vivienda', monto: '3.500.000', fondo: 'Porvenir',
+    archivos: {}, autorizado: false
+  };
+
+  set = (k) => (e) => this.setState({ [k]: e.target.value });
+
+  docsRequeridos() {
+    const s = this.state;
+    if (s.tipo === 'incapacidad') {
+      const d = [
+        { id: 'cert', nombre: 'Certificado médico', obligatorio: true },
+        { id: 'hist', nombre: 'Historia clínica', obligatorio: true }
+      ];
+      if (s.subtipo === 'Accidente de tránsito') d.push({ id: 'soat', nombre: 'SOAT o documento de la entidad de tránsito', obligatorio: true });
+      if (s.subtipo === 'Accidente de trabajo') d.push({ id: 'furat', nombre: 'Reporte interno del accidente (FURAT)', obligatorio: false });
+      return d;
+    }
+    if (s.tipo === 'cesantias') {
+      if (s.cesTipo === 'Completa') return [
+        { id: 'carta', nombre: 'Carta de terminación del contrato', obligatorio: true },
+        { id: 'cedula', nombre: 'Copia del documento de identidad', obligatorio: true }
+      ];
+      const base = [{ id: 'cedula', nombre: 'Copia del documento de identidad', obligatorio: true }];
+      if (s.motivo === 'Compra de vivienda') base.unshift(
+        { id: 'promesa', nombre: 'Promesa de compraventa', obligatorio: true },
+        { id: 'tradicion', nombre: 'Certificado de tradición y libertad', obligatorio: true });
+      else if (s.motivo === 'Estudios') base.unshift(
+        { id: 'matricula', nombre: 'Recibo o orden de matrícula', obligatorio: true },
+        { id: 'admision', nombre: 'Carta de admisión de la institución', obligatorio: false });
+      else if (s.motivo === 'Remodelación') base.unshift(
+        { id: 'presupuesto', nombre: 'Presupuesto de la obra', obligatorio: true },
+        { id: 'predial', nombre: 'Certificado de propiedad o impuesto predial', obligatorio: true });
+      else base.unshift({ id: 'soporte', nombre: 'Documento soporte del motivo', obligatorio: true });
+      return base;
+    }
+    return [];
+  }
+
+  dias() {
+    const a = new Date(this.state.fechaInicio), b = new Date(this.state.fechaFin);
+    if (isNaN(a) || isNaN(b)) return 0;
+    const n = Math.round((b - a) / 86400000) + 1;
+    return n > 0 ? n : 0;
+  }
+
+  seleccion() {
+    const s = this.state;
+    if (s.tipo === 'incapacidad') return 'Incapacidad · ' + s.subtipo;
+    if (s.tipo === 'cesantias') return s.cesTipo === 'Parcial' ? 'Cesantías parcial · ' + s.motivo : 'Cesantías completa (terminación de contrato)';
+    if (s.tipo === 'licencia') return 'Licencia de maternidad / paternidad';
+    return '';
+  }
+
+  cargar(id, nombreArchivo) {
+    this.setState(st => ({ archivos: Object.assign({}, st.archivos, { [id]: nombreArchivo }) }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const docs = this.docsRequeridos();
+    const faltan = docs.filter(d => d.obligatorio && !s.archivos[d.id]).length;
+    const cargados = docs.filter(d => s.archivos[d.id]).length;
+    const dias = this.dias();
+
+    const paso2Label = s.tipo === 'cesantias' ? 'Detalle del retiro' : 'Detalle';
+    const pasos = ['Tipo de novedad', paso2Label, 'Documentos', 'Revisión'].map((label, i) => {
+      const n = i + 1, hecho = n < s.paso, activo = n === s.paso;
+      return {
+        n, label, marca: hecho ? '✓' : String(n),
+        chipBg: activo ? '#011480' : '#fff', chipBd: activo ? '#011480' : (hecho ? '#029f4c' : '#e3e5ea'),
+        numBg: activo ? '#239bd8' : (hecho ? '#029f4c' : '#F5F6F8'),
+        numFg: activo || hecho ? '#fff' : '#9096a6',
+        txt: activo ? '#fff' : (hecho ? '#02733a' : '#9096a6')
+      };
+    });
+
+    const elegir = (id) => () => this.setState({ tipo: id, archivos: {}, autorizado: false });
+
+    const opciones = (arr, key) => arr.map(label => ({
+      label, sel: s[key] === label,
+      onClick: () => this.setState({ [key]: label, archivos: {}, autorizado: false })
+    }));
+
+    const documentos = docs.map(d => {
+      const archivo = s.archivos[d.id];
+      return {
+        nombre: d.nombre, obligatorio: d.obligatorio,
+        etiqueta: d.obligatorio ? 'Obligatorio' : 'Opcional',
+        etqFg: d.obligatorio ? '#b42318' : '#5b6072',
+        etqBg: d.obligatorio ? '#fdecea' : '#F5F6F8',
+        etqBd: d.obligatorio ? '#f5c2bd' : '#c0c0c2',
+        cargado: !!archivo, pendiente: !archivo,
+        archivo: archivo || '',
+        borde: archivo ? '#029f4c' : '#c0c0c2',
+        fondo: archivo ? '#f7fdf9' : '#fff',
+        botonTexto: archivo ? 'Reemplazar archivo' : 'Subir archivo',
+        onFile: (e) => { const f = e.target.files && e.target.files[0]; if (f) this.cargar(d.id, f.name); },
+        onQuitar: () => this.setState(st => { const a = Object.assign({}, st.archivos); delete a[d.id]; return { archivos: a }; }),
+        onDragOver: (e) => e.preventDefault(),
+        onDrop: (e) => { e.preventDefault(); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) this.cargar(d.id, f.name); }
+      };
+    });
+
+    const resumen = s.tipo === 'incapacidad'
+      ? [
+          { k: 'Tipo de novedad', v: 'Incapacidad' },
+          { k: 'Subtipo', v: s.subtipo },
+          { k: 'Fechas', v: s.fechaInicio + ' → ' + s.fechaFin },
+          { k: 'N.º de días', v: dias + (dias === 1 ? ' día' : ' días') },
+          { k: 'EPS', v: s.eps },
+          { k: 'Observaciones', v: s.observaciones || '—' }
+        ]
+      : [
+          { k: 'Tipo de novedad', v: 'Retiro de cesantías' },
+          { k: 'Modalidad', v: s.cesTipo === 'Parcial' ? 'Parcial' : 'Completa (terminación de contrato)' }
+        ].concat(s.cesTipo === 'Parcial' ? [{ k: 'Motivo', v: s.motivo }] : [], [
+          { k: 'Monto solicitado', v: '$ ' + s.monto + ' COP' },
+          { k: 'Fondo de cesantías', v: s.fondo }
+        ]);
+
+    // CTA
+    let ctaTexto = 'Continuar', bloqueado = false, ayuda = '';
+    if (s.paso === 1) { bloqueado = !s.tipo; ayuda = bloqueado ? 'Selecciona el tipo de novedad para continuar.' : ''; }
+    if (s.paso === 2 && s.tipo === 'incapacidad') { bloqueado = dias <= 0; ayuda = bloqueado ? 'Revisa las fechas: la fecha de fin debe ser igual o posterior al inicio.' : ''; }
+    if (s.paso === 3) {
+      bloqueado = faltan > 0 || !s.autorizado;
+      ayuda = faltan > 0
+        ? 'Faltan ' + faltan + ' documento' + (faltan === 1 ? '' : 's') + ' obligatorio' + (faltan === 1 ? '' : 's') + '.'
+        : (!s.autorizado ? 'Debes autorizar el tratamiento de datos para continuar.' : '');
+    }
+    if (s.paso === 4) ctaTexto = 'Radicar solicitud';
+
+    const solicitudes = [
+      { folio: 'RAD-2026-00042', tipo: 'Incapacidad general · 5 días · Coosalud', fecha: '9 de marzo de 2026', estado: 'Recibida' },
+      { folio: 'RAD-2026-00038', tipo: 'Cesantías parcial · Compra de vivienda · Porvenir', fecha: '18 de febrero de 2026', estado: 'Validada' },
+      { folio: 'RAD-2026-00021', tipo: 'Incapacidad por accidente de tránsito · 12 días', fecha: '27 de enero de 2026', estado: 'Devuelta', motivoDevolucion: 'El certificado médico está ilegible. Vuelve a cargarlo en formato PDF.' },
+      { folio: 'RAD-2026-00014', tipo: 'Incapacidad general · 3 días · Coosalud', fecha: '12 de enero de 2026', estado: 'Radicada' }
+    ].map(x => {
+      const c = CHIP[x.estado];
+      return { ...x, chipBg: c[0], chipFg: c[1], chipBd: c[2], devuelta: x.estado === 'Devuelta' };
+    });
+
+    return {
+      tabRadicar: s.tab === 'radicar', tabSolicitudes: s.tab === 'solicitudes',
+      menuAbierto: s.menu, toggleMenu: () => this.setState(st => ({ menu: !st.menu })),
+      irRadicar: () => this.setState({ tab: 'radicar', menu: false }),
+      irSolicitudes: () => this.setState({ tab: 'solicitudes', menu: false }),
+      vistaWizard: s.tab === 'radicar' && s.vista === 'wizard',
+      vistaConfirmacion: s.tab === 'radicar' && s.vista === 'confirmacion',
+      pasos,
+      elegirIncapacidad: elegir('incapacidad'), elegirLicencia: elegir('licencia'), elegirCesantias: elegir('cesantias'),
+      selIncapacidad: s.tipo === 'incapacidad', selLicencia: s.tipo === 'licencia', selCesantias: s.tipo === 'cesantias',
+      enPaso1: s.paso === 1, enPaso2Inc: s.paso === 2 && s.tipo === 'incapacidad',
+      enPaso2Ces: s.paso === 2 && s.tipo === 'cesantias',
+      enPaso3: s.paso === 3, enPaso4: s.paso === 4,
+      subtipos: opciones(['General', 'Accidente de tránsito', 'Accidente de trabajo'], 'subtipo'),
+      cesTipos: [['Parcial', 'Parcial'], ['Completa', 'Completa (terminación de contrato)']].map(([v, label]) => ({
+        label, sel: s.cesTipo === v,
+        onClick: () => this.setState({ cesTipo: v, archivos: {}, autorizado: false })
+      })),
+      esParcial: s.cesTipo === 'Parcial', esART: s.tipo === 'incapacidad' && s.subtipo === 'Accidente de trabajo',
+      fechaInicio: s.fechaInicio, setFechaInicio: this.set('fechaInicio'),
+      fechaFin: s.fechaFin, setFechaFin: this.set('fechaFin'),
+      diasTexto: dias > 0 ? dias + (dias === 1 ? ' día' : ' días') : 'Revisa las fechas',
+      eps: s.eps, setEps: this.set('eps'),
+      observaciones: s.observaciones, setObservaciones: this.set('observaciones'),
+      motivo: s.motivo, setMotivo: this.set('motivo'),
+      monto: s.monto, setMonto: this.set('monto'),
+      fondo: s.fondo, setFondo: this.set('fondo'),
+      documentos, resumenSeleccion: this.seleccion(),
+      progresoPct: docs.length ? Math.round((cargados / docs.length) * 100) : 0,
+      progresoTexto: cargados + ' de ' + docs.length,
+      autorizado: s.autorizado, toggleAutorizacion: () => this.setState(st => ({ autorizado: !st.autorizado })),
+      resumen, adjuntos: documentos.filter(d => d.cargado),
+      puedeVolver: s.paso > 1, atras: () => this.setState(st => ({ paso: Math.max(1, st.paso - 1) })),
+      continuarBloqueado: bloqueado, ctaTexto,
+      ctaBg: bloqueado ? '#c0c0c2' : (s.paso === 4 ? '#029f4c' : '#011480'),
+      ctaCursor: bloqueado ? 'not-allowed' : 'pointer',
+      mostrarAyudaCTA: !!ayuda, ayudaCTA: ayuda,
+      continuar: () => {
+        if (bloqueado) return;
+        if (s.paso === 4) { this.setState({ vista: 'confirmacion' }); return; }
+        if (s.paso === 1 && s.tipo === 'licencia') { this.setState({ paso: 3 }); return; }
+        this.setState(st => ({ paso: st.paso + 1 }));
+      },
+      folio: 'RAD-2026-00042',
+      fechaRadicacion: '9 de marzo de 2026 · 8:42 a. m.',
+      radicarOtra: () => this.setState({ vista: 'wizard', paso: 1, tipo: null, archivos: {}, autorizado: false }),
+      solicitudes
+    };
+  }
+}
+</script>
+</body>
+</html>
