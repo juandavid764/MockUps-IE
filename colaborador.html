@@ -133,7 +133,19 @@
 
 <div style="display:grid;gap:14px">
 <sc-if value="{{ esParcial }}">
-<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Motivo del retiro</span><select value="{{ motivo }}" onChange="{{ setMotivo }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Estudios</option><option>Compra de vivienda</option><option>Remodelación</option><option>Otro</option></select></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Motivo del retiro</span><select value="{{ motivo }}" onChange="{{ setMotivo }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Compra de vivienda</option><option>Remodelación o mejora de vivienda</option><option>Estudio del trabajador o hijos</option></select></label>
+</sc-if>
+
+<sc-if value="{{ esRemodelacion }}">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">La vivienda está</span><select value="{{ titular }}" onChange="{{ setTitular }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>A mi nombre</option><option>A nombre de mi cónyuge</option></select></label>
+<div style="display:flex;gap:10px;background:#fff7e6;border:1px solid #f0b429;border-radius:12px;padding:13px 14px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a5a00" stroke-width="2" stroke-linecap="round" style="flex:0 0 auto"><path d="M12 3 2 20h20L12 3zM12 9v6M12 17.4v.6"></path></svg>
+<div style="font-size:13.5px;line-height:1.5;color:#5b4200">Este beneficio solo aplica a viviendas a nombre tuyo o de tu cónyuge. Si es de tu cónyuge, deberás acreditar la unión con certificado extrajuicio de convivencia o registro civil de matrimonio.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ esEstudio }}">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">El estudio es</span><select value="{{ beneficiario }}" onChange="{{ setBeneficiario }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Para mí (trabajador)</option><option>Para un hijo(a)</option></select></label>
 </sc-if>
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Monto solicitado (COP)</span>
 <div style="display:flex;align-items:stretch;border:1.5px solid #c0c0c2;border-radius:10px;background:#fff;min-height:52px;overflow:hidden"><span style="display:flex;align-items:center;padding:0 13px;background:#F5F6F8;border-right:1px solid #e3e5ea;font-size:16px;color:#5b6072">$</span><input type="text" inputMode="numeric" value="{{ monto }}" onChange="{{ setMonto }}" style="flex:1 1 auto;border:0;outline:none;padding:0 13px;font-size:16px;min-width:0"></div>
@@ -165,6 +177,9 @@
 <div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px">
 <span style="font-size:15px;font-weight:bold;line-height:1.35;flex:1 1 auto;min-width:0">{{ d.nombre }}</span>
 <span style="flex:0 0 auto;font-size:10.5px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:{{ d.etqFg }};background:{{ d.etqBg }};border:1px solid {{ d.etqBd }};border-radius:99px;padding:3px 9px">{{ d.etiqueta }}</span>
+<sc-if value="{{ d.tieneNota }}">
+<div style="flex:1 1 100%;font-size:13px;line-height:1.45;color:#5b6072">{{ d.nota }}</div>
+</sc-if>
 </div>
 <sc-if value="{{ d.cargado }}">
 <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#02733a;margin-bottom:10px;min-width:0">
@@ -376,6 +391,9 @@ class Component extends DCLogic {
     fechaInicio: '2026-03-09', fechaFin: '2026-03-13',
     eps: 'Coosalud', observaciones: '',
     cesTipo: 'Parcial', motivo: 'Compra de vivienda', monto: '3.500.000', fondo: 'Porvenir',
+    // Condiciones del Excel "Tipos documentos": la remodelación exige acreditar
+    // la titularidad (empleado o cónyuge) y el estudio distingue trabajador/hijo.
+    titular: 'A mi nombre', beneficiario: 'Para mí (trabajador)',
     archivos: {}, autorizado: false,
     solicitudes: SOLICITUDES
   };
@@ -410,23 +428,44 @@ class Component extends DCLogic {
       if (s.subtipo === 'Accidente de trabajo') d.push({ id: 'furat', nombre: 'Reporte interno del accidente (FURAT)', obligatorio: false });
       return d;
     }
+    // Documentos de cesantías según el Excel "Tipos documentos" entregado por
+    // la jefe de nómina (reunión IE #2). Todos son obligatorios: la recepción
+    // no radica la solicitud si falta alguno.
     if (s.tipo === 'cesantias') {
       if (s.cesTipo === 'Completa') return [
-        { id: 'carta', nombre: 'Carta de terminación del contrato', obligatorio: true },
-        { id: 'cedula', nombre: 'Copia del documento de identidad', obligatorio: true }
+        { id: 'carta', nombre: 'Carta de solicitud de retiro', nota: 'Motivo: terminación del contrato.', obligatorio: true },
+        { id: 'terminacion', nombre: 'Carta o acta de terminación del contrato', obligatorio: true },
+        { id: 'cedulaTrab', nombre: 'Cédula del trabajador', obligatorio: true }
       ];
-      const base = [{ id: 'cedula', nombre: 'Copia del documento de identidad', obligatorio: true }];
-      if (s.motivo === 'Compra de vivienda') base.unshift(
-        { id: 'promesa', nombre: 'Promesa de compraventa', obligatorio: true },
-        { id: 'tradicion', nombre: 'Certificado de tradición y libertad', obligatorio: true });
-      else if (s.motivo === 'Estudios') base.unshift(
-        { id: 'matricula', nombre: 'Recibo o orden de matrícula', obligatorio: true },
-        { id: 'admision', nombre: 'Carta de admisión de la institución', obligatorio: false });
-      else if (s.motivo === 'Remodelación') base.unshift(
-        { id: 'presupuesto', nombre: 'Presupuesto de la obra', obligatorio: true },
-        { id: 'predial', nombre: 'Certificado de propiedad o impuesto predial', obligatorio: true });
-      else base.unshift({ id: 'soporte', nombre: 'Documento soporte del motivo', obligatorio: true });
-      return base;
+      if (s.motivo === 'Compra de vivienda') return [
+        { id: 'carta', nombre: 'Carta de solicitud de retiro', nota: 'Debe indicar como motivo: compra de vivienda.', obligatorio: true },
+        { id: 'tradicion', nombre: 'Certificado de tradición del lote o casa', obligatorio: true },
+        { id: 'compraventa', nombre: 'Compraventa', nota: 'Escritura o promesa de compraventa del inmueble.', obligatorio: true },
+        { id: 'cedulaTrab', nombre: 'Cédula del trabajador', obligatorio: true },
+        { id: 'cedulaVend', nombre: 'Cédula del vendedor', obligatorio: true }
+      ];
+      if (s.motivo === 'Remodelación o mejora de vivienda') {
+        const d = [
+          { id: 'carta', nombre: 'Carta de solicitud de retiro', nota: 'Debe indicar como motivo: mejora de vivienda.', obligatorio: true },
+          { id: 'tradicion', nombre: 'Certificado de tradición del lote o casa', obligatorio: true },
+          { id: 'cotizaciones', nombre: 'Tres cotizaciones de la obra a realizar', nota: 'Cada cotización debe traer el NIT de la ferretería.', obligatorio: true },
+          { id: 'cedulaTrab', nombre: 'Cédula del trabajador', obligatorio: true }
+        ];
+        // El beneficio solo aplica a viviendas del empleado o del cónyuge: si
+        // está a nombre del cónyuge hay que acreditar la unión y su identidad.
+        if (s.titular === 'A nombre de mi cónyuge') d.push(
+          { id: 'convivencia', nombre: 'Certificado extrajuicio de convivencia o registro civil de matrimonio', obligatorio: true },
+          { id: 'cedulaConyuge', nombre: 'Cédula del cónyuge', obligatorio: true });
+        return d;
+      }
+      const est = [
+        { id: 'carta', nombre: 'Carta de solicitud de retiro', nota: 'Debe indicar como motivo: pago de estudios superiores.', obligatorio: true },
+        { id: 'cedulaTrab', nombre: 'Cédula del trabajador', obligatorio: true },
+        { id: 'recibo', nombre: 'Recibo de pago de estudios', obligatorio: true }
+      ];
+      if (s.beneficiario === 'Para un hijo(a)') est.push(
+        { id: 'docHijo', nombre: 'Registro civil o tarjeta de identidad del hijo(a)', obligatorio: true });
+      return est;
     }
     return [];
   }
@@ -471,6 +510,10 @@ class Component extends DCLogic {
 
     const elegir = (id) => () => this.setState({ tipo: id, archivos: {}, autorizado: false });
 
+    // Cambiar motivo, titularidad o beneficiario cambia la lista de documentos,
+    // así que se limpian los adjuntos y la autorización ya dada.
+    const reiniciar = (k) => (e) => this.setState({ [k]: e.target.value, archivos: {}, autorizado: false });
+
     const opciones = (arr, key) => arr.map(label => ({
       label, sel: s[key] === label,
       onClick: () => this.setState({ [key]: label, archivos: {}, autorizado: false })
@@ -480,6 +523,7 @@ class Component extends DCLogic {
       const archivo = s.archivos[d.id];
       return {
         nombre: d.nombre, obligatorio: d.obligatorio,
+        nota: d.nota || '', tieneNota: !!d.nota,
         etiqueta: d.obligatorio ? 'Obligatorio' : 'Opcional',
         etqFg: d.obligatorio ? '#b42318' : '#5b6072',
         etqBg: d.obligatorio ? '#fdecea' : '#F5F6F8',
@@ -508,10 +552,14 @@ class Component extends DCLogic {
       : [
           { k: 'Tipo de novedad', v: 'Retiro de cesantías' },
           { k: 'Modalidad', v: s.cesTipo === 'Parcial' ? 'Parcial' : 'Completa (terminación de contrato)' }
-        ].concat(s.cesTipo === 'Parcial' ? [{ k: 'Motivo', v: s.motivo }] : [], [
-          { k: 'Monto solicitado', v: '$ ' + s.monto + ' COP' },
-          { k: 'Fondo de cesantías', v: s.fondo }
-        ]);
+        ].concat(
+          s.cesTipo === 'Parcial' ? [{ k: 'Motivo', v: s.motivo }] : [],
+          s.cesTipo === 'Parcial' && s.motivo === 'Remodelación o mejora de vivienda' ? [{ k: 'Titular de la vivienda', v: s.titular }] : [],
+          s.cesTipo === 'Parcial' && s.motivo === 'Estudio del trabajador o hijos' ? [{ k: 'Beneficiario del estudio', v: s.beneficiario }] : [],
+          [
+            { k: 'Monto solicitado', v: '$ ' + s.monto + ' COP' },
+            { k: 'Fondo de cesantías', v: s.fondo }
+          ]);
 
     // CTA
     let ctaTexto = 'Continuar', bloqueado = false, ayuda = '';
@@ -559,7 +607,11 @@ class Component extends DCLogic {
       diasTexto: dias > 0 ? dias + (dias === 1 ? ' día' : ' días') : 'Revisa las fechas',
       eps: s.eps, setEps: this.set('eps'),
       observaciones: s.observaciones, setObservaciones: this.set('observaciones'),
-      motivo: s.motivo, setMotivo: this.set('motivo'),
+      motivo: s.motivo, setMotivo: reiniciar('motivo'),
+      esRemodelacion: s.cesTipo === 'Parcial' && s.motivo === 'Remodelación o mejora de vivienda',
+      esEstudio: s.cesTipo === 'Parcial' && s.motivo === 'Estudio del trabajador o hijos',
+      titular: s.titular, setTitular: reiniciar('titular'),
+      beneficiario: s.beneficiario, setBeneficiario: reiniciar('beneficiario'),
       monto: s.monto, setMonto: this.set('monto'),
       fondo: s.fondo, setFondo: this.set('fondo'),
       documentos, resumenSeleccion: this.seleccion(),
