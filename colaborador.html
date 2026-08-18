@@ -160,6 +160,27 @@
 </div>
 </sc-if>
 
+<sc-if value="{{ enPaso2Lic }}">
+<div>
+<h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Detalle de la licencia</h1>
+<p style="margin:0 0 18px;font-size:14px;color:#5b6072;line-height:1.5">Indica el tipo de licencia por nacimiento. Los documentos que debes adjuntar dependen de esta elección.</p>
+
+<div style="margin-bottom:20px">
+<span style="display:block;font-size:14px;font-weight:bold;margin-bottom:8px">Tipo de licencia</span>
+<div style="display:grid;gap:8px">
+<sc-for list="{{ tiposLicencia }}" as="o" hint-placeholder-count="2">
+<button type="button" onClick="{{ o.onClick }}" style="position:relative;text-align:left;background:#fff;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px;font-size:14.5px;min-height:50px;cursor:pointer">{{ o.label }}<sc-if value="{{ o.sel }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;background:rgba(1,20,128,.05);border-radius:10px;pointer-events:none"></span></sc-if></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;background:#e8f4fc;border:1px solid #239bd8;border-radius:12px;padding:13px 14px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#011480" stroke-width="2" stroke-linecap="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 11v6M12 7.4v.6"></path></svg>
+<div style="font-size:13.5px;line-height:1.5;color:#0b2a5b">En el siguiente paso verás la lista exacta de documentos según el tipo de licencia.</div>
+</div>
+</div>
+</sc-if>
+
 <sc-if value="{{ enPaso3 }}">
 <div>
 <h1 style="margin:0 0 6px;font-size:20px;color:#011480;line-height:1.25">Documentos requeridos</h1>
@@ -387,7 +408,7 @@ const SOLICITUDES = [
 class Component extends DCLogic {
   state = {
     tab: 'radicar', menu: false, paso: 1, vista: 'wizard',
-    tipo: null, subtipo: 'General',
+    tipo: null, subtipo: 'General', tipoLicencia: 'Maternidad',
     fechaInicio: '2026-03-09', fechaFin: '2026-03-13',
     eps: 'Coosalud', observaciones: '',
     cesTipo: 'Parcial', motivo: 'Compra de vivienda', monto: '3.500.000', fondo: 'Porvenir',
@@ -427,6 +448,23 @@ class Component extends DCLogic {
       if (s.subtipo === 'Accidente de tránsito') d.push({ id: 'soat', nombre: 'SOAT o documento de la entidad de tránsito', obligatorio: true });
       if (s.subtipo === 'Accidente de trabajo') d.push({ id: 'furat', nombre: 'Reporte interno del accidente (FURAT)', obligatorio: false });
       return d;
+    }
+    // Documentos de licencia de maternidad/paternidad según reunión IE #1: las
+    // listas difieren (la mamá acredita su cédula y el certificado médico de
+    // incapacidad; el papá solo acredita su propia cédula).
+    if (s.tipo === 'licencia') {
+      const base = [
+        { id: 'histParto', nombre: 'Historia clínica del parto', obligatorio: true },
+        { id: 'actaNacido', nombre: 'Acta o certificado de nacido vivo', obligatorio: true },
+        { id: 'registroNac', nombre: 'Registro de nacimiento', obligatorio: true }
+      ];
+      if (s.tipoLicencia === 'Paternidad') {
+        base.push({ id: 'cedulaPapa', nombre: 'Fotocopia de la cédula del papá', obligatorio: true });
+      } else {
+        base.push({ id: 'cedulaMama', nombre: 'Fotocopia de la cédula de la mamá', obligatorio: true });
+        base.push({ id: 'certInc', nombre: 'Certificado médico de incapacidad', obligatorio: true });
+      }
+      return base;
     }
     // Documentos de cesantías según el Excel "Tipos documentos" entregado por
     // la jefe de nómina (reunión IE #2). Todos son obligatorios: la recepción
@@ -481,7 +519,7 @@ class Component extends DCLogic {
     const s = this.state;
     if (s.tipo === 'incapacidad') return 'Incapacidad · ' + s.subtipo;
     if (s.tipo === 'cesantias') return s.cesTipo === 'Parcial' ? 'Cesantías parcial · ' + s.motivo : 'Cesantías completa (terminación de contrato)';
-    if (s.tipo === 'licencia') return 'Licencia de maternidad / paternidad';
+    if (s.tipo === 'licencia') return 'Licencia de ' + s.tipoLicencia.toLowerCase();
     return '';
   }
 
@@ -549,6 +587,12 @@ class Component extends DCLogic {
           { k: 'EPS', v: s.eps },
           { k: 'Observaciones', v: s.observaciones || '—' }
         ]
+      : s.tipo === 'licencia'
+      ? [
+          { k: 'Tipo de novedad', v: 'Licencia de maternidad / paternidad' },
+          { k: 'Tipo de licencia', v: s.tipoLicencia },
+          { k: 'Duración', v: s.tipoLicencia === 'Paternidad' ? '15 días' : '4 meses' }
+        ]
       : [
           { k: 'Tipo de novedad', v: 'Retiro de cesantías' },
           { k: 'Modalidad', v: s.cesTipo === 'Parcial' ? 'Parcial' : 'Completa (terminación de contrato)' }
@@ -595,8 +639,10 @@ class Component extends DCLogic {
       selIncapacidad: s.tipo === 'incapacidad', selLicencia: s.tipo === 'licencia', selCesantias: s.tipo === 'cesantias',
       enPaso1: s.paso === 1, enPaso2Inc: s.paso === 2 && s.tipo === 'incapacidad',
       enPaso2Ces: s.paso === 2 && s.tipo === 'cesantias',
+      enPaso2Lic: s.paso === 2 && s.tipo === 'licencia',
       enPaso3: s.paso === 3, enPaso4: s.paso === 4,
       subtipos: opciones(['General', 'Accidente de tránsito', 'Accidente de trabajo'], 'subtipo'),
+      tiposLicencia: opciones(['Maternidad', 'Paternidad'], 'tipoLicencia'),
       cesTipos: [['Parcial', 'Parcial'], ['Completa', 'Completa (terminación de contrato)']].map(([v, label]) => ({
         label, sel: s.cesTipo === v,
         onClick: () => this.setState({ cesTipo: v, archivos: {}, autorizado: false })
@@ -627,7 +673,6 @@ class Component extends DCLogic {
       continuar: () => {
         if (bloqueado) return;
         if (s.paso === 4) { this.setState({ vista: 'confirmacion' }); return; }
-        if (s.paso === 1 && s.tipo === 'licencia') { this.setState({ paso: 3 }); return; }
         this.setState(st => ({ paso: st.paso + 1 }));
       },
       folio: 'RAD-2026-00042',
