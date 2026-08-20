@@ -105,7 +105,21 @@
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de fin</span><input type="date" value="{{ fechaFin }}" onChange="{{ setFechaFin }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F5F6F8;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px"><span style="font-size:14px;font-weight:bold">N.º de días</span><span style="font-size:16px;font-weight:bold;color:#011480">{{ diasTexto }}</span></div>
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">EPS</span><select value="{{ eps }}" onChange="{{ setEps }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Coosalud</option><option>Nueva EPS</option><option>SURA</option><option>Salud Total</option></select></label>
+</div>
+
+<!-- Datos de la atención. Nómina los necesita para el reporte a la EPS/ARL y hoy
+     los persigue por teléfono: se piden aquí, donde el colaborador tiene el
+     certificado a la vista. -->
+<div style="margin-bottom:16px">
+<span style="display:block;font-size:14px;font-weight:bold;margin-bottom:4px">Datos de la atención</span>
+<p style="margin:0 0 12px;font-size:13.5px;color:#5b6072;line-height:1.5">Cópialos del certificado médico. Si algo no coincide, nómina lo corrige antes de radicar.</p>
+<div style="display:grid;gap:14px">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Lugar de atención</span><input value="{{ lugar }}" onChange="{{ setLugar }}" placeholder="Clínica, hospital o IPS donde te atendieron" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Ciudad de atención</span><input value="{{ ciudad }}" onChange="{{ setCiudad }}" placeholder="Ej.: Cali" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Nombre del médico</span><input value="{{ medico }}" onChange="{{ setMedico }}" placeholder="Tal como aparece en la firma del certificado" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Observaciones <span style="font-weight:normal;color:#9096a6">(opcional)</span></span><textarea rows="3" value="{{ observaciones }}" onChange="{{ setObservaciones }}" placeholder="Ej.: incapacidad expedida en urgencias." style="width:100%;border:1.5px solid #c0c0c2;border-radius:10px;padding:12px 13px;font-size:16px;resize:vertical"></textarea></label>
+</div>
+<p style="margin:12px 0 0;font-size:13px;color:#5b6072;line-height:1.5;background:#F5F6F8;border:1px solid #e3e5ea;border-radius:10px;padding:11px 13px">El código y la descripción del diagnóstico los registra nómina leyendo el certificado. No tienes que buscarlos.</p>
 </div>
 
 <sc-if value="{{ esART }}">
@@ -406,6 +420,8 @@ class Component extends DCLogic {
     tipo: null, subtipo: 'General', tipoLicencia: 'Maternidad',
     fechaInicio: '2026-03-09', fechaFin: '2026-03-13',
     eps: 'Coosalud', observaciones: '',
+    // Datos de la atención que nómina necesita para el reporte a la EPS/ARL.
+    lugar: 'Clínica Nuestra Señora de los Remedios', ciudad: 'Cali', medico: 'Andrés F. Muñoz',
     cesTipo: 'Parcial', motivo: 'Compra de vivienda', monto: '3.500.000', fondo: 'Porvenir',
     // Condiciones del Excel "Tipos documentos": la remodelación exige acreditar
     // la titularidad (empleado o cónyuge) y el estudio distingue trabajador/hijo.
@@ -580,6 +596,9 @@ class Component extends DCLogic {
           { k: 'Fechas', v: s.fechaInicio + ' → ' + s.fechaFin },
           { k: 'N.º de días', v: dias + (dias === 1 ? ' día' : ' días') },
           { k: 'EPS', v: s.eps },
+          { k: 'Lugar de atención', v: s.lugar || '—' },
+          { k: 'Ciudad de atención', v: s.ciudad || '—' },
+          { k: 'Nombre del médico', v: s.medico || '—' },
           { k: 'Observaciones', v: s.observaciones || '—' }
         ]
       : s.tipo === 'licencia'
@@ -603,7 +622,15 @@ class Component extends DCLogic {
     // CTA
     let ctaTexto = 'Continuar', bloqueado = false, ayuda = '';
     if (s.paso === 1) { bloqueado = !s.tipo; ayuda = bloqueado ? 'Selecciona el tipo de novedad para continuar.' : ''; }
-    if (s.paso === 2 && s.tipo === 'incapacidad') { bloqueado = dias <= 0; ayuda = bloqueado ? 'Revisa las fechas: la fecha de fin debe ser igual o posterior al inicio.' : ''; }
+    if (s.paso === 2 && s.tipo === 'incapacidad') {
+      // Los datos de la atención los pide nómina para el reporte a la EPS/ARL;
+      // si el colaborador no los deja aquí, alguien tiene que llamarlo después.
+      const sinAtencion = ['lugar', 'ciudad', 'medico'].filter(k => !String(s[k] || '').trim()).length;
+      bloqueado = dias <= 0 || sinAtencion > 0;
+      ayuda = dias <= 0
+        ? 'Revisa las fechas: la fecha de fin debe ser igual o posterior al inicio.'
+        : (sinAtencion > 0 ? 'Completa los datos de la atención: están en el certificado médico.' : '');
+    }
     if (s.paso === 3) {
       bloqueado = faltan > 0 || !s.autorizado;
       ayuda = faltan > 0
@@ -647,6 +674,9 @@ class Component extends DCLogic {
       fechaFin: s.fechaFin, setFechaFin: this.set('fechaFin'),
       diasTexto: dias > 0 ? dias + (dias === 1 ? ' día' : ' días') : 'Revisa las fechas',
       eps: s.eps, setEps: this.set('eps'),
+      lugar: s.lugar, setLugar: this.set('lugar'),
+      ciudad: s.ciudad, setCiudad: this.set('ciudad'),
+      medico: s.medico, setMedico: this.set('medico'),
       observaciones: s.observaciones, setObservaciones: this.set('observaciones'),
       motivo: s.motivo, setMotivo: reiniciar('motivo'),
       esRemodelacion: s.cesTipo === 'Parcial' && s.motivo === 'Remodelación o mejora de vivienda',
