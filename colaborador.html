@@ -313,7 +313,7 @@
 <button type="button" onClick="{{ s.subirCorreccion }}" style="width:100%;min-height:48px;margin-top:10px;background:#011480;color:#fff;border:0;border-radius:11px;font-size:14.5px;font-weight:bold;cursor:pointer">Subir documentación corregida</button>
 </sc-if>
 <div style="margin-top:13px;border-top:1px dashed #e3e5ea;padding-top:11px">
-<div style="font-size:10.5px;font-weight:bold;letter-spacing:.6px;color:#9096a6;margin-bottom:9px">TRAZABILIDAD</div>
+<div style="font-size:10.5px;font-weight:bold;letter-spacing:.6px;color:#9096a6;margin-bottom:9px">HISTORIAL DE ESTADOS</div>
 <sc-for list="{{ s.hist }}" as="h" hint-placeholder-count="3">
 <div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:8px">
 <span style="width:9px;height:9px;border-radius:50%;background:{{ h.color }};flex:0 0 auto;margin-top:4px"></span>
@@ -358,9 +358,9 @@ const CHIP = {
   Radicada: ['#eaf7ef', '#02733a', '#029f4c']
 };
 
-// Convenciones del flujograma: cambio de estado, proceso del analista,
-// proceso del colaborador y proceso automático del sistema.
-const EV = { estado: '#0f9b8e', analista: '#239bd8', colaborador: '#e0910a', auto: '#a8508f' };
+// El colaborador solo ve el historial de estados y las actualizaciones del
+// proceso (analista y colaborador); las notificaciones no se trazan aquí.
+const EV = { estado: '#0f9b8e', analista: '#239bd8', colaborador: '#e0910a' };
 
 const ev = (tipo, title, when) => ({ tipo, title, when });
 
@@ -376,8 +376,7 @@ const SOLICITUDES = [
     hist: [
       ev('estado', 'Estado: Recibida', '18 feb · 9:15 a. m.'),
       ev('analista', 'Nómina valida los documentos', '18 feb · 2:30 p. m.'),
-      ev('estado', 'Estado: Aceptada', '18 feb · 2:41 p. m.'),
-      ev('auto', 'Recibiste la notificación de aceptación', '18 feb · 2:41 p. m.')
+      ev('estado', 'Estado: Aceptada', '18 feb · 2:41 p. m.')
     ]
   },
   {
@@ -387,8 +386,7 @@ const SOLICITUDES = [
     hist: [
       ev('estado', 'Estado: Recibida', '27 ene · 7:20 a. m.'),
       ev('analista', 'Nómina valida los documentos', '27 ene · 11:05 a. m.'),
-      ev('estado', 'Estado: Devuelta', '27 ene · 11:12 a. m.'),
-      ev('auto', 'Recibiste la notificación de devolución', '27 ene · 11:12 a. m.')
+      ev('estado', 'Estado: Devuelta', '27 ene · 11:12 a. m.')
     ]
   },
   {
@@ -398,7 +396,6 @@ const SOLICITUDES = [
       ev('estado', 'Estado: Recibida', '12 ene · 6:55 a. m.'),
       ev('analista', 'Nómina valida los documentos', '12 ene · 9:40 a. m.'),
       ev('estado', 'Estado: Aceptada', '12 ene · 9:52 a. m.'),
-      ev('auto', 'Recibiste la notificación de aceptación', '12 ene · 9:52 a. m.'),
       ev('analista', 'Nómina radica ante Coosalud', '12 ene · 3:10 p. m.'),
       ev('estado', 'Estado: Radicada', '12 ene · 3:11 p. m.')
     ]
