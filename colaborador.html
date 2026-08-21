@@ -104,7 +104,7 @@
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de inicio</span><input type="date" value="{{ fechaInicio }}" onChange="{{ setFechaInicio }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
 <label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de fin</span><input type="date" value="{{ fechaFin }}" onChange="{{ setFechaFin }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F5F6F8;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px"><span style="font-size:14px;font-weight:bold">N.º de días</span><span style="font-size:16px;font-weight:bold;color:#011480">{{ diasTexto }}</span></div>
-<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">EPS</span><select value="{{ eps }}" onChange="{{ setEps }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>Coosalud</option><option>Nueva EPS</option><option>SURA</option><option>Salud Total</option></select></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">EPS</span><select value="{{ eps }}" onChange="{{ setEps }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>EPS Coosalud</option><option>EPS Nueva EPS</option><option>EPS Sura</option><option>EPS Salud Total</option><option>EPS Emssanar</option></select></label>
 </div>
 
 <!-- Datos de la atención. Nómina los necesita para el reporte a la EPS/ARL y hoy
@@ -186,6 +186,26 @@
 <button type="button" onClick="{{ o.onClick }}" style="position:relative;text-align:left;background:#fff;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px;font-size:14.5px;min-height:50px;cursor:pointer">{{ o.label }}<sc-if value="{{ o.sel }}"><span style="position:absolute;inset:0;border:2.5px solid #011480;background:rgba(1,20,128,.05);border-radius:10px;pointer-events:none"></span></sc-if></button>
 </sc-for>
 </div>
+</div>
+
+<!-- La licencia se reporta a la EPS con los mismos datos que una incapacidad,
+     así que se piden aquí y no quedan para que nómina los persiga después. -->
+<div style="display:grid;gap:14px;margin-bottom:16px">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de inicio de la licencia</span><input type="date" value="{{ fechaInicio }}" onChange="{{ setFechaInicio }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Fecha de fin</span><input type="date" value="{{ fechaFin }}" onChange="{{ setFechaFin }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F5F6F8;border:1.5px solid #e3e5ea;border-radius:10px;padding:13px 15px"><span style="font-size:14px;font-weight:bold">N.º de días</span><span style="font-size:16px;font-weight:bold;color:#011480">{{ diasTexto }}</span></div>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">EPS</span><select value="{{ eps }}" onChange="{{ setEps }}" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 11px;font-size:16px;background:#fff"><option>EPS Coosalud</option><option>EPS Nueva EPS</option><option>EPS Sura</option><option>EPS Salud Total</option><option>EPS Emssanar</option></select></label>
+</div>
+
+<div style="margin-bottom:16px">
+<span style="display:block;font-size:14px;font-weight:bold;margin-bottom:4px">Datos de la atención</span>
+<p style="margin:0 0 12px;font-size:13.5px;color:#5b6072;line-height:1.5">Del nacimiento, tal como aparecen en el certificado. Si algo no coincide, nómina lo corrige antes de radicar.</p>
+<div style="display:grid;gap:14px">
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Lugar de atención</span><input value="{{ lugar }}" onChange="{{ setLugar }}" placeholder="Clínica u hospital donde ocurrió el nacimiento" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Ciudad de atención</span><input value="{{ ciudad }}" onChange="{{ setCiudad }}" placeholder="Ej.: Cali" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+<label style="display:block"><span style="display:block;font-size:14px;font-weight:bold;margin-bottom:6px">Nombre del médico</span><input value="{{ medico }}" onChange="{{ setMedico }}" placeholder="Tal como aparece en la firma del certificado" style="width:100%;min-height:52px;border:1.5px solid #c0c0c2;border-radius:10px;padding:0 13px;font-size:16px;background:#fff"></label>
+</div>
+<p style="margin:12px 0 0;font-size:13px;color:#5b6072;line-height:1.5;background:#F5F6F8;border:1px solid #e3e5ea;border-radius:10px;padding:11px 13px">La duración de ley es de {{ duracionLey }}. Nómina verifica las fechas contra el certificado.</p>
 </div>
 
 <div style="display:flex;gap:10px;background:#e8f4fc;border:1px solid #239bd8;border-radius:12px;padding:13px 14px">
@@ -419,7 +439,7 @@ class Component extends DCLogic {
     tab: 'radicar', menu: false, paso: 1, vista: 'wizard',
     tipo: null, subtipo: 'General', tipoLicencia: 'Maternidad',
     fechaInicio: '2026-03-09', fechaFin: '2026-03-13',
-    eps: 'Coosalud', observaciones: '',
+    eps: 'EPS Coosalud', observaciones: '',
     // Datos de la atención que nómina necesita para el reporte a la EPS/ARL.
     lugar: 'Clínica Nuestra Señora de los Remedios', ciudad: 'Cali', medico: 'Andrés F. Muñoz',
     cesTipo: 'Parcial', motivo: 'Compra de vivienda', monto: '3.500.000', fondo: 'Porvenir',
@@ -605,7 +625,12 @@ class Component extends DCLogic {
       ? [
           { k: 'Tipo de novedad', v: 'Licencia de maternidad / paternidad' },
           { k: 'Tipo de licencia', v: s.tipoLicencia },
-          { k: 'Duración', v: s.tipoLicencia === 'Paternidad' ? '15 días' : '4 meses' }
+          { k: 'Fechas', v: s.fechaInicio + ' → ' + s.fechaFin },
+          { k: 'N.º de días', v: dias + (dias === 1 ? ' día' : ' días') },
+          { k: 'EPS', v: s.eps },
+          { k: 'Lugar de atención', v: s.lugar || '—' },
+          { k: 'Ciudad de atención', v: s.ciudad || '—' },
+          { k: 'Nombre del médico', v: s.medico || '—' }
         ]
       : [
           { k: 'Tipo de novedad', v: 'Retiro de cesantías' },
@@ -622,7 +647,7 @@ class Component extends DCLogic {
     // CTA
     let ctaTexto = 'Continuar', bloqueado = false, ayuda = '';
     if (s.paso === 1) { bloqueado = !s.tipo; ayuda = bloqueado ? 'Selecciona el tipo de novedad para continuar.' : ''; }
-    if (s.paso === 2 && s.tipo === 'incapacidad') {
+    if (s.paso === 2 && (s.tipo === 'incapacidad' || s.tipo === 'licencia')) {
       // Los datos de la atención los pide nómina para el reporte a la EPS/ARL;
       // si el colaborador no los deja aquí, alguien tiene que llamarlo después.
       const sinAtencion = ['lugar', 'ciudad', 'medico'].filter(k => !String(s[k] || '').trim()).length;
@@ -669,6 +694,7 @@ class Component extends DCLogic {
         label, sel: s.cesTipo === v,
         onClick: () => this.setState({ cesTipo: v, archivos: {}, autorizado: false })
       })),
+      duracionLey: s.tipoLicencia === 'Paternidad' ? '2 semanas' : '18 semanas',
       esParcial: s.cesTipo === 'Parcial', esART: s.tipo === 'incapacidad' && s.subtipo === 'Accidente de trabajo',
       fechaInicio: s.fechaInicio, setFechaInicio: this.set('fechaInicio'),
       fechaFin: s.fechaFin, setFechaFin: this.set('fechaFin'),
